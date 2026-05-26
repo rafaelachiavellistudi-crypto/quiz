@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de Frutas</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f9f9f9;
+        }
+
+        .question-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 400px;
+        }
+
+        .buttons {
+            margin-top: 20px;
+        }
+
+        button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .yes {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .no {
+            background-color: #f44336;
+            color: white;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #reset-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            background-color: #333;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        #reset-btn:hover {
+            background-color: #555;
+        }
+
+        .fade {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+    </style>
+</head>
+
+<body>
+
+    <button id="reset-btn" onclick="resetQuiz()">🔄 Reiniciar</button>
+
+    <div class="question-container">
+
+        <h2 id="question">Pergunta aqui</h2>
+
+        <div class="buttons">
+            <button class="yes" onclick="answer('sim')">Sim</button>
+            <button class="no" onclick="answer('nao')">Não</button>
+        </div>
+
+        <div id="result"></div>
+
+    </div>
+
+    <script>
+        const questions = [
+        "Você gosta de músicas agitadas?",
+        "Você prefere músicas calmas?",
+        "Você gosta de ouvir música para estudar?",
+        "Você gosta de músicas com batidas fortes?",
+        "Você prefere letras emocionais?",
+        "Você gosta de dançar quando escuta música?",
+        "Você gosta de músicas eletrônicas?",
+        "Você prefere músicas antigas?",
+        "Você gosta de ouvir música no volume alto?",
+        "Você gosta de músicas românticas?",
+        "Você prefere músicas instrumentais?",
+        "Você gosta de músicas rápidas e animadas?",
+        "Você gosta de músicas tristes às vezes?",
+        "Você prefere ouvir música sozinho?",
+        "Você gosta de músicas modernas e populares?"
+    ];
+
+        let currentQuestion = 0;
+
+        let score = 0;
+
+        const questionElement = document.getElementById("question");
+
+        questionElement.innerText = questions[currentQuestion];
+
+        function answer(response) {
+
+            if(response === "sim") {
+                score++;
+            }
+
+            currentQuestion++;
+
+            if(currentQuestion < questions.length) {
+
+                questionElement.innerText = questions[currentQuestion];
+
+            } else {
+
+                showResult();
+
+            }
+        }
+
+        function showResult() {
+
+            const result = document.getElementById("result");
+
+            if(score >= 13) {
+
+                result.innerText = "🎧 Seu estilo combina com POP, sendo um estilo mais abrangente para várias categorias agitadas, modernas e com bastante energia!";
+
+            } else if(score >= 11) {
+
+                result.innerText = "🎸 Seu estilo combina com músicas antigas, talvez algo como Blues, Jazz, Rock clássico, Soul ou Disco.";
+
+            } else if(score >= 9) {
+
+                result.innerText = "🎵 Seu estilo combina com Rock Alternativo e Indie, algo mais emocional, criativo e com personalidade.";
+
+            } else if(score >= 7) {
+
+                result.innerText = "🎹 Seu estilo combina com Lo-fi, Jazz calmo e músicas instrumentais para relaxar, estudar ou ficar mais tranquilo.";
+
+            } else if(score >= 5) {
+
+                result.innerText = "🎤 Seu estilo combina com Hip Hop, Rap e R&B, focando mais em letras, ritmo e expressão pessoal.";
+
+            } else if(score >= 3) {
+
+                result.innerText = "🌌 Seu estilo combina com músicas ambientes e eletrônicas mais leves, criando uma sensação de imersão e tranquilidade.";
+
+            } else {
+
+                result.innerText = "🎻 Seu estilo combina com música clássica e sons mais suaves, trazendo uma experiência mais calma e emocional.";
+            }
+
+            document.querySelector(".buttons").style.display = "none";
+        }
+
+        function resetQuiz() {
+
+            const container = document.querySelector(".question-container");
+
+            container.classList.add("fade");
+
+            setTimeout(() => {
+
+                currentQuestion = 0;
+                score = 0;
+
+                questionElement.innerText = questions[currentQuestion];
+
+                document.querySelector(".buttons").style.display = "block";
+
+                document.getElementById("result").innerText = "";
+
+                container.classList.remove("fade");
+
+            }, 500);
+        }
+    </script>
+
+</body>
+</html>
