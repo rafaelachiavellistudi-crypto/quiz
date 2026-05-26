@@ -1,0 +1,546 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de gosto musical</title>
+
+    <link rel="icon" type="image/png" href="image/favicon/favicon-32x32.png" sizes="32x32">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f9f9f9;
+        }
+
+        .question-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 400px;
+            max-width: 90%;
+        }
+
+        h2 {
+            min-height: 100px;
+        }
+
+        .buttons {
+            margin-top: 20px;
+        }
+
+        button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .yes {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .no {
+            background-color: #f44336;
+            color: white;
+        }
+
+        #result {
+            line-height: 1.5;
+        }
+
+        #counter {
+            font-size: 14px;
+            color: #777;
+            text-align: right;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        #reset-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            background-color: #333;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        #reset-btn:hover {
+            background-color: #555;
+        }
+
+        .fade {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+    </style>
+</head>
+    <body>
+
+    <div class="question-container">
+
+        <div id="counter">1 / 10</div>
+
+        <h2 id="question"></h2>
+
+        <div class="buttons">
+            <button class="yes" onclick="answer(true)">Sim</button>
+            <button class="no" onclick="answer(false)">Não</button>
+        </div>
+
+        <div id="result"></div>
+
+    </div>
+
+    <button id="reset-btn" onclick="resetQuiz()">🔄 Reiniciar</button>
+
+    <script>
+        const styles = {
+            pop: 0,
+            rock: 0,
+            indie: 0,
+            chill: 0,
+            classic: 0
+        };
+
+        const questions = [
+
+            {
+                question: "Você gosta de músicas agitadas e dançantes?",
+                yes: ["pop"],
+                no: ["classic"]
+            },
+
+            {
+                question: "Você prefere músicas emocionais e profundas?",
+                yes: ["indie", "chill"],
+                no: ["pop"]
+            },
+
+            {
+                question: "Você gosta de solos de guitarra marcantes?",
+                yes: ["rock"],
+                no: ["pop"]
+            },
+
+            {
+                question: "Você costuma ouvir música para relaxar?",
+                yes: ["chill", "classic"],
+                no: ["rock"]
+            },
+
+            {
+                question: "Você gosta de músicas modernas e populares?",
+                yes: ["pop"],
+                no: ["indie"]
+            },
+
+            {
+                question: "Você gosta de ouvir música no volume alto?",
+                yes: ["rock"],
+                no: ["classic"]
+            },
+
+            {
+                question: "Você gosta de músicas instrumentais?",
+                yes: ["classic", "chill"],
+                no: ["pop"]
+            },
+
+            {
+                question: "Você prefere músicas com letras reflexivas?",
+                yes: ["indie"],
+                no: ["pop"]
+            },
+
+            {
+                question: "Você gosta de batidas eletrônicas?",
+                yes: ["pop"],
+                no: ["classic"]
+            },
+
+            {
+                question: "Você gosta de sons mais pesados?",
+                yes: ["rock"],
+                no: ["chill"]
+            },
+
+            {
+                question: "Você gosta de músicas para estudar?",
+                yes: ["chill"],
+                no: ["rock"]
+            },
+
+            {
+                question: "Você prefere músicas antigas?",
+                yes: ["classic", "rock"],
+                no: ["pop"]
+            },
+
+            {
+                question: "Você gosta de refrões chiclete?",
+                yes: ["pop"],
+                no: ["indie"]
+            },
+
+            {
+                question: "Você gosta de bandas alternativas?",
+                yes: ["indie"],
+                no: ["pop"]
+            },
+
+            {
+                question: "Você gosta de piano e violino?",
+                yes: ["classic"],
+                no: ["rock"]
+            },
+
+            {
+                question: "Você gosta de músicas para dormir?",
+                yes: ["chill"],
+                no: ["rock"]
+            },
+
+            {
+                question: "Você gosta de festivais e shows grandes?",
+                yes: ["pop", "rock"],
+                no: ["classic"]
+            },
+
+            {
+                question: "Você prefere músicas suaves?",
+                yes: ["chill", "classic"],
+                no: ["rock"]
+            },
+
+            {
+                question: "Você gosta de músicas com muita energia?",
+                yes: ["rock", "pop"],
+                no: ["classic"]
+            },
+
+            {
+                question: "Você gosta de músicas mais criativas e diferentes?",
+                yes: ["indie"],
+                no: ["pop"]
+            },
+
+            {
+                question: "Você gosta de músicas com orquestra?",
+                yes: ["classic"],
+                no: ["rock"]
+            },
+
+            {
+                question: "Você gosta de cantar junto?",
+                yes: ["pop"],
+                no: ["classic"]
+            },
+
+            {
+                question: "Você gosta de músicas tristes às vezes?",
+                yes: ["indie", "chill"],
+                no: ["pop"]
+            },
+
+            {
+                question: "Você prefere músicas acústicas?",
+                yes: ["indie", "classic"],
+                no: ["pop"]
+            },
+
+            {
+                question: "Você gosta de músicas rápidas?",
+                yes: ["rock"],
+                no: ["chill"]
+            },
+
+            {
+                question: "Você prefere músicas calmas?",
+                yes: ["chill"],
+                no: ["rock"]
+            },
+
+            {
+                question: "Você gosta de artistas muito populares?",
+                yes: ["pop"],
+                no: ["indie"]
+            },
+
+            {
+                question: "Você gosta de guitarra distorcida?",
+                yes: ["rock"],
+                no: ["classic"]
+            },
+
+            {
+                question: "Você gosta de músicas emocionantes?",
+                yes: ["indie", "classic"],
+                no: ["pop"]
+            },
+
+            {
+                question: "Você gosta de playlists para relaxar?",
+                yes: ["chill"],
+                no: ["rock"]
+            },
+
+            {
+                question: "Você gosta de músicas dançantes?",
+                yes: ["pop"],
+                no: ["classic"]
+            },
+
+            {
+                question: "Você gosta de músicas longas e detalhadas?",
+                yes: ["classic", "rock"],
+                no: ["pop"]
+            },
+
+            {
+                question: "Você prefere músicas modernas?",
+                yes: ["pop"],
+                no: ["classic"]
+            },
+
+            {
+                question: "Você gosta de músicas independentes?",
+                yes: ["indie"],
+                no: ["pop"]
+            },
+
+            {
+                question: "Você gosta de músicas suaves para concentração?",
+                yes: ["chill"],
+                no: ["rock"]
+            },
+
+            {
+                question: "Você gosta de músicas intensas?",
+                yes: ["rock"],
+                no: ["classic"]
+            },
+
+            {
+                question: "Você gosta de músicas sentimentais?",
+                yes: ["indie"],
+                no: ["rock"]
+            },
+
+            {
+                question: "Você gosta de música clássica em filmes?",
+                yes: ["classic"],
+                no: ["pop"]
+            },
+
+            {
+                question: "Você gosta de batidas fortes?",
+                yes: ["pop", "rock"],
+                no: ["classic"]
+            },
+
+            {
+                question: "Você gosta de ambientes tranquilos com música?",
+                yes: ["chill"],
+                no: ["rock"]
+            },
+
+            {
+                question: "Você gosta de músicas nostálgicas?",
+                yes: ["indie", "classic"],
+                no: ["pop"]
+            },
+
+            {
+                question: "Você gosta de músicas com solos longos?",
+                yes: ["rock"],
+                no: ["pop"]
+            },
+
+            {
+                question: "Você gosta de músicas suaves com piano?",
+                yes: ["classic", "chill"],
+                no: ["rock"]
+            },
+
+            {
+                question: "Você gosta de músicas emocionais e lentas?",
+                yes: ["indie", "classic"],
+                no: ["pop"]
+            },
+
+            {
+                question: "Você gosta de músicas para animar o dia?",
+                yes: ["pop"],
+                no: ["chill"]
+            },
+
+            {
+                question: "Você gosta de músicas profundas?",
+                yes: ["indie"],
+                no: ["pop"]
+            },
+
+            {
+                question: "Você gosta de músicas relaxantes sem letra?",
+                yes: ["chill", "classic"],
+                no: ["rock"]
+            },
+
+            {
+                question: "Você gosta de músicas com muita bateria?",
+                yes: ["rock"],
+                no: ["classic"]
+            },
+
+            {
+                question: "Você gosta de música com mistura de estilos?",
+                yes: ["indie", "pop"],
+                no: ["classic"]
+            },
+
+            {
+                question: "Você gosta de músicas que causam forte emoção?",
+                yes: ["classic", "indie"],
+                no: ["pop"]
+            }
+
+        ];
+
+        let currentQuestion = 0;
+
+        const questionElement = document.getElementById("question");
+
+        questionElement.innerText = questions[currentQuestion].question;
+
+        function answer(isYes) {
+
+            const current = questions[currentQuestion];
+
+            if(isYes) {
+
+                current.yes.forEach(style => {
+                    styles[style]++;
+                });
+
+            } else {
+
+                current.no.forEach(style => {
+                    styles[style]++;
+                });
+            }
+
+            currentQuestion++;
+
+            if(currentQuestion < 10) {
+
+                questionElement.innerText =
+                questions[currentQuestion].question;
+
+                document.getElementById("counter").innerText =
+                (currentQuestion + 1) + " / " + questions.length;
+
+            } else {
+
+                showResult();
+            }
+        }
+
+        function showResult() {
+
+            const result = document.getElementById("result");
+
+            questionElement.style.display = "none";
+
+            document.getElementById("counter").style.display = "none";
+
+            document.querySelector(".buttons").style.display = "none";
+
+            const winner = Object.keys(styles).reduce((a, b) =>
+                styles[a] > styles[b] ? a : b
+            );
+
+            if(winner === "pop") {
+
+                result.innerText =
+                "🎧 Seu estilo combina com POP! Você gosta de músicas modernas, animadas, populares e cheias de energia.";
+
+            } else if(winner === "rock") {
+
+                result.innerText =
+                "🎸 Seu estilo combina com ROCK! Você gosta de intensidade, guitarras marcantes e músicas com muita presença.";
+
+            } else if(winner === "indie") {
+
+                result.innerText =
+                "🎵 Seu estilo combina com INDIE! Você prefere músicas criativas, emocionais e com personalidade própria.";
+
+            } else if(winner === "chill") {
+
+                result.innerText =
+                "🎹 Seu estilo combina com LO-FI e CHILL! Você gosta de ambientes tranquilos, relaxamento e músicas suaves.";
+
+            } else {
+
+                result.innerText =
+                "🎻 Seu estilo combina com MÚSICA CLÁSSICA! Você aprecia melodias emocionantes, instrumentos clássicos e músicas profundas.";
+            }
+        }
+
+        function resetQuiz() {
+
+            const container =
+            document.querySelector(".question-container");
+
+            container.classList.add("fade");
+
+            setTimeout(() => {
+
+                currentQuestion = 0;
+
+                for(let style in styles) {
+                    styles[style] = 0;
+                }
+
+                questionElement.style.display = "block";
+
+                questionElement.innerText =
+                questions[currentQuestion].question;
+
+                const counterElement =
+                document.getElementById("counter");
+
+                counterElement.style.display = "block";
+
+                counterElement.innerText = "1 / 10";
+
+                document.querySelector(".buttons").style.display =
+                "block";
+
+                document.getElementById("result").innerText = "";
+
+                container.classList.remove("fade");
+
+            }, 500);
+        }
+
+    </script>
+</body>
+</html>

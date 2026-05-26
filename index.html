@@ -1,206 +1,699 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz de Frutas</title>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #f9f9f9;
-        }
-
-        .question-container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            text-align: center;
-            width: 400px;
-        }
-
-        .buttons {
-            margin-top: 20px;
-        }
-
-        button {
-            margin: 0 10px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-        }
-
-        .yes {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        .no {
-            background-color: #f44336;
-            color: white;
-        }
-
-        #result {
-            margin-top: 20px;
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        #reset-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 8px;
-            background-color: #333;
-            color: white;
-            cursor: pointer;
-            font-size: 14px;
-            transition: 0.3s;
-        }
-
-        #reset-btn:hover {
-            background-color: #555;
-        }
-
-        .fade {
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DNA Musical — Descubra seu Perfil</title>
+  <meta name="description" content="Responda 15 perguntas e descubra seu perfil musical com recomendações personalizadas." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #080b12; --surface: #0f1520; --surface2: #16202e;
+      --border: rgba(255,255,255,0.07); --text: #f0f4ff; --muted: #7a8499;
+      --accent: #00f5a0; --accent2: #00d9f5; --glow: rgba(0,245,160,0.15); --radius: 16px;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100vh; }
+    #root { min-height: 100vh; }
+    .app {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% 0%, rgba(0,245,160,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0,217,245,0.05) 0%, transparent 60%),
+        var(--bg);
+    }
+    .card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 24px;
+      width: 100%; max-width: 680px; overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,245,160,0.05);
+      animation: fadeUp 0.5s ease both;
+    }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+    .splash { padding:60px 48px; text-align:center; animation:fadeIn 0.6s ease both; }
+    .splash-icon { font-size:64px; margin-bottom:24px; display:block; filter:drop-shadow(0 0 20px rgba(0,245,160,0.4)); }
+    .splash h1 {
+      font-family:'Clash Display',sans-serif; font-size:clamp(28px,5vw,42px); font-weight:700;
+      line-height:1.1; margin-bottom:16px;
+      background:linear-gradient(135deg,#00f5a0,#00d9f5,#a78bfa);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .splash p { color:var(--muted); font-size:16px; line-height:1.6; margin-bottom:40px; max-width:420px; margin-left:auto; margin-right:auto; }
+    .splash-stats { display:flex; justify-content:center; gap:32px; margin-bottom:40px; }
+    .stat { text-align:center; }
+    .stat-n { font-family:'Clash Display',sans-serif; font-size:28px; font-weight:700; color:var(--accent); display:block; }
+    .stat-l { font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; }
+    .btn {
+      display:inline-flex; align-items:center; gap:10px; padding:16px 36px; border-radius:50px;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      color:#080b12; font-family:'Syne',sans-serif; font-size:15px; font-weight:700; border:none; cursor:pointer;
+      transition:transform 0.2s ease,box-shadow 0.2s ease; letter-spacing:0.02em;
+    }
+    .btn:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(0,245,160,0.3); }
+    .btn:active { transform:translateY(0); }
+    .btn:disabled { opacity:0.4; cursor:not-allowed; transform:none; box-shadow:none; }
+    .progress-bar { height:3px; background:var(--surface2); }
+    .progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2)); transition:width 0.4s ease; border-radius:0 2px 2px 0; }
+    .question-wrap { padding:40px 40px 36px; animation:fadeIn 0.35s ease both; }
+    .q-meta { display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; }
+    .q-num { font-size:12px; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.12em; }
+    .q-counter { font-size:13px; color:var(--muted); }
+    .q-text { font-family:'Clash Display',sans-serif; font-size:clamp(18px,3.5vw,24px); font-weight:600; line-height:1.35; margin-bottom:28px; }
+    .options { display:grid; gap:10px; }
+    .option {
+      padding:16px 20px; border:1.5px solid var(--border); border-radius:14px;
+      background:var(--surface2); cursor:pointer; text-align:left; width:100%;
+      font-family:'Syne',sans-serif; font-size:14px; color:var(--text);
+      transition:all 0.2s ease; display:flex; align-items:center; gap:12px; line-height:1.4;
+    }
+    .option:hover { border-color:rgba(0,245,160,0.4); background:rgba(0,245,160,0.05); transform:translateX(4px); }
+    .option.selected { border-color:var(--accent); background:rgba(0,245,160,0.1); box-shadow:0 0 0 1px rgba(0,245,160,0.2); }
+    .option-emoji { font-size:20px; flex-shrink:0; }
+    .adapt-hint { margin:0 40px 20px; padding:12px 16px; border:1px solid rgba(167,139,250,0.2); border-radius:10px; background:rgba(167,139,250,0.05); display:flex; align-items:center; gap:10px; }
+    .adapt-dot { width:6px; height:6px; border-radius:50%; background:#a78bfa; animation:pulse 1.5s ease infinite; flex-shrink:0; }
+    .adapt-text { font-size:12px; color:#a78bfa; }
+    .result-wrap { padding:40px; animation:fadeIn 0.5s ease both; }
+    .result-header { text-align:center; margin-bottom:36px; }
+    .result-icon { font-size:48px; display:block; margin-bottom:16px; }
+    .result-title {
+      font-family:'Clash Display',sans-serif; font-size:clamp(22px,4vw,32px); font-weight:700; margin-bottom:8px;
+      background:linear-gradient(135deg,#00f5a0,#00d9f5); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .result-desc { font-size:14px; color:var(--muted); line-height:1.6; max-width:480px; margin:0 auto; }
+    .section-title { font-size:11px; text-transform:uppercase; letter-spacing:0.12em; color:var(--muted); margin-bottom:14px; font-weight:700; }
+    .genres-list { display:grid; gap:10px; margin-bottom:28px; }
+    .genre-row { display:flex; align-items:center; gap:14px; }
+    .genre-label { font-size:13px; font-weight:700; min-width:88px; }
+    .genre-bar-wrap { flex:1; height:8px; background:var(--surface2); border-radius:4px; overflow:hidden; }
+    .genre-bar { height:100%; border-radius:4px; transition:width 1s ease; }
+    .genre-pct { font-size:12px; font-weight:700; color:var(--accent); min-width:36px; text-align:right; }
+    .profiles { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:28px; }
+    .profile-chip { padding:10px 16px; border-radius:50px; border:1.5px solid var(--border); background:var(--surface2); font-size:13px; font-weight:600; display:flex; align-items:center; gap:8px; }
+    .profile-chip.top { border-color:rgba(0,245,160,0.4); background:rgba(0,245,160,0.08); color:var(--accent); }
+    .recs { display:grid; gap:14px; margin-bottom:28px; }
+    .rec-card { border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+    .rec-header { padding:14px 18px; display:flex; align-items:center; gap:12px; }
+    .rec-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+    .rec-genre { font-weight:700; font-size:14px; }
+    .rec-pct { margin-left:auto; font-size:13px; color:var(--accent); font-weight:700; }
+    .rec-body { padding:0 18px 16px; display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .rec-col h5 { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px; }
+    .rec-col ul { list-style:none; }
+    .rec-col li { font-size:13px; color:var(--text); padding:3px 0; border-bottom:1px solid var(--border); }
+    .rec-col li:last-child { border:none; }
+    .result-actions { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+    @media (max-width:560px) {
+      .splash,.question-wrap,.result-wrap { padding:28px 24px; }
+      .adapt-hint { margin:0 24px 16px; }
+      .rec-body { grid-template-columns:1fr; }
+      .splash-stats { gap:20px; }
+    }
+  </style>
 </head>
-
 <body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
 
-    <button id="reset-btn" onclick="resetQuiz()">🔄 Reiniciar</button>
+    const GENRES = {
+      rock: { label:"Rock", color:"#e63946", tags:["guitarra","energia","intensidade","rebeldia","distorcao","banda"], emotions:["adrenalina","raiva","empoderamento","nostalgia"], energy:8, artists:["Nirvana","Linkin Park","Arctic Monkeys","Foo Fighters","Pearl Jam"], songs:["Smells Like Teen Spirit","Numb","Do I Wanna Know?","Everlong","Black"] },
+      pop: { label:"Pop", color:"#f72585", tags:["danca","festa","alegria","facil","radio","melodia"], emotions:["felicidade","leveza","amor","animacao"], energy:6, artists:["The Weeknd","Dua Lipa","Harry Styles","Olivia Rodrigo","Anitta"], songs:["Blinding Lights","Levitating","As It Was","drivers license","Envolver"] },
+      trap: { label:"Trap", color:"#7209b7", tags:["graves","batida","swag","atitude","808","flow"], emotions:["confianca","adrenalina","atitude","ambicao"], energy:7, artists:["Matuê","Teto","WIU","Jão","Don Toliver"], songs:["Kenny G","Mustang Preto","Vampiro","Pirata e Tesouro","Toxic"] },
+      funk: { label:"Funk", color:"#ff6d00", tags:["danca","festa","graves","batida","popular","energia"], emotions:["alegria","animacao","liberdade","prazer"], energy:9, artists:["MC Hariel","Luísa Sonza","Anitta","MC Cabelinho","Dennis DJ"], songs:["Cachorrada","Modo Turbo","Vai Malandra","Tudo OK","Essa Mina é Louca"] },
+      mpb: { label:"MPB", color:"#06d6a0", tags:["letra","profundidade","instrumental","brasilidade","voz","poetico"], emotions:["nostalgia","saudade","reflexao","amor","melancolia"], energy:3, artists:["Gilberto Gil","Caetano Veloso","Djavan","Marisa Monte","Milton Nascimento"], songs:["Aquele Abraço","Sozinho","Flor de Lis","Amor I Love You","Travessia"] },
+      jazz: { label:"Jazz", color:"#ffd166", tags:["instrumental","improviso","sofisticado","complexo","noturno","swing"], emotions:["relaxamento","sofisticacao","nostalgia","reflexao"], energy:4, artists:["Miles Davis","John Coltrane","Chet Baker","Norah Jones","Herbie Hancock"], songs:["So What","My Favorite Things","Almost Blue","Don't Know Why","Cantaloupe Island"] },
+      metal: { label:"Metal", color:"#adb5bd", tags:["guitarra","agressividade","intensidade","pesado","tecnica","velocidade"], emotions:["raiva","catarse","empoderamento","adrenalina"], energy:10, artists:["Metallica","Slipknot","System of a Down","Iron Maiden","Megadeth"], songs:["Enter Sandman","Duality","Chop Suey!","The Trooper","Holy Wars"] },
+      eletronica: { label:"Eletrônica", color:"#4cc9f0", tags:["sintetizador","batida","danca","energia","festa","drop"], emotions:["euforia","libertacao","animacao","transe"], energy:9, artists:["Daft Punk","The Chemical Brothers","Deadmau5","Avicii","Alok"], songs:["Get Lucky","Block Rockin' Beats","Professional Griefers","Wake Me Up","Fuego"] },
+      sertanejo: { label:"Sertanejo", color:"#e9c46a", tags:["romantismo","saudade","brasil","viola","amor","dupla"], emotions:["saudade","amor","nostalgia","alegria","melancolia"], energy:5, artists:["Jorge & Mateus","Henrique & Juliano","Zé Neto & Cristiano","Lauana Prado","Gusttavo Lima"], songs:["Sosseguei","Vai Lá Em Casa Hoje","Largado às Traças","Sem Limite","Balada do Gurizão"] },
+      indie: { label:"Indie", color:"#80b918", tags:["alternativo","autoral","atmosfera","unico","introspectivo","textura"], emotions:["melancolia","esperanca","nostalgia","sonho","liberdade"], energy:5, artists:["Tame Impala","Vampire Weekend","Bon Iver","Mac DeMarco","Parcels"], songs:["The Less I Know the Better","A-Punk","Skinny Love","Chamber of Reflection","Overnight"] },
+    };
 
-    <div class="question-container">
+    const PROFILES = {
+      rebelde: { label:"Rebelde", icon:"⚡", desc:"Você vai contra a corrente e usa a música como expressão de identidade.", tags:["guitarra","agressividade","rebeldia","intensidade"] },
+      energetico: { label:"Energético", icon:"🔥", desc:"Você vive em alta frequência. A música é combustível para sua vida agitada.", tags:["energia","danca","adrenalina","batida","euforia"] },
+      nostalgico: { label:"Nostálgico", icon:"🌙", desc:"Sons do passado falam direto ao seu coração. Você valoriza a memória afetiva.", tags:["nostalgia","saudade","retro","classico"] },
+      emocional: { label:"Emocional", icon:"💜", desc:"Você se conecta profundamente com letras e melodias que tocam a alma.", tags:["emocional","melancolia","saudade","amor"] },
+      reflexivo: { label:"Reflexivo", icon:"🧠", desc:"Você usa a música para pensar e se reconectar consigo mesmo.", tags:["introspectivo","profundidade","letra","reflexao"] },
+      alternativo: { label:"Alternativo", icon:"🌀", desc:"Seu gosto foge do mainstream. Você aprecia o que poucos descobrem.", tags:["alternativo","autoral","unico","underground"] },
+      relaxado: { label:"Relaxado", icon:"🌊", desc:"Você busca sons que acalmam e criam atmosferas tranquilas ao redor.", tags:["relaxamento","calm","instrumental","leve"] },
+      extrovertido: { label:"Extrovertido", icon:"🎉", desc:"Festa, dança e energia coletiva são o seu habitat natural.", tags:["festa","danca","alegria","popular"] },
+      underground: { label:"Underground", icon:"🖤", desc:"Você vai fundo. O raro, o obscuro e o intenso te definem.", tags:["pesado","tecnica","agressividade","complexo"] },
+      moderno: { label:"Moderno", icon:"🚀", desc:"Você está sempre à frente, consumindo o que há de mais atual.", tags:["swag","atitude","flow","808"] },
+      experimental: { label:"Experimental", icon:"🔬", desc:"Fronteiras musicais são apenas pontos de partida para você.", tags:["improviso","textura","sintetizador","atmosfera"] },
+      romantico: { label:"Romântico", icon:"❤️", desc:"O amor é a trilha sonora da sua vida. Você sente tudo com intensidade.", tags:["romantismo","amor","voz","melodia"] },
+    };
 
-        <h2 id="question">Pergunta aqui</h2>
-
-        <div class="buttons">
-            <button class="yes" onclick="answer('sim')">Sim</button>
-            <button class="no" onclick="answer('nao')">Não</button>
-        </div>
-
-        <div id="result"></div>
-
-    </div>
-
-    <script>
-        const questions = [
-        "Você gosta de músicas agitadas?",
-        "Você prefere músicas calmas?",
-        "Você gosta de ouvir música para estudar?",
-        "Você gosta de músicas com batidas fortes?",
-        "Você prefere letras emocionais?",
-        "Você gosta de dançar quando escuta música?",
-        "Você gosta de músicas eletrônicas?",
-        "Você prefere músicas antigas?",
-        "Você gosta de ouvir música no volume alto?",
-        "Você gosta de músicas românticas?",
-        "Você prefere músicas instrumentais?",
-        "Você gosta de músicas rápidas e animadas?",
-        "Você gosta de músicas tristes às vezes?",
-        "Você prefere ouvir música sozinho?",
-        "Você gosta de músicas modernas e populares?"
+    const ALL_QUESTIONS = [
+      { id:1, text:"Qual dessas situações mais combina com você?", type:"initial", options:[
+        { text:"🎸 Tocar ou ouvir guitarra alta", tags:["guitarra","intensidade","energia"], scores:{rock:3,metal:2,indie:1} },
+        { text:"🕺 Dançar sem parar numa festa", tags:["danca","festa","alegria"], scores:{funk:3,eletronica:2,pop:2} },
+        { text:"📖 Ouvir música enquanto lê", tags:["introspectivo","relaxamento","letra"], scores:{mpb:3,jazz:2,indie:2} },
+        { text:"🎧 Explodir o fone com graves", tags:["graves","batida","swag"], scores:{trap:3,funk:2,eletronica:1} },
+      ]},
+      { id:2, text:"Qual emoção você mais busca na música?", type:"initial", options:[
+        { text:"😤 Adrenalina e poder", tags:["adrenalina","empoderamento","intensidade"], scores:{metal:3,rock:2,trap:2} },
+        { text:"😢 Choro e sentimento", tags:["emocional","melancolia","saudade"], scores:{mpb:3,sertanejo:2,indie:2} },
+        { text:"😊 Alegria e leveza", tags:["alegria","felicidade","animacao"], scores:{pop:3,funk:2,sertanejo:1} },
+        { text:"🤔 Reflexão e profundidade", tags:["reflexao","profundidade","introspectivo"], scores:{jazz:3,mpb:2,indie:2} },
+      ]},
+      { id:3, text:"Como você normalmente ouve música?", type:"initial", options:[
+        { text:"🎵 No fone, sozinho no quarto", tags:["introspectivo","solo","intensidade"], scores:{indie:2,rock:2,trap:2} },
+        { text:"🔊 Alto, na caixa de som", tags:["energia","festa","popular"], scores:{funk:3,eletronica:2,pop:1} },
+        { text:"🚗 No carro, cantando", tags:["alegria","popular","melodia"], scores:{sertanejo:3,pop:2,mpb:1} },
+        { text:"🎧 Trilha sonora do dia a dia", tags:["relaxamento","ambient","introspectivo"], scores:{jazz:2,mpb:2,indie:2} },
+      ]},
+      { id:4, text:"Você prefere guitarra...", type:"tag:guitarra", options:[
+        { text:"🎸 Distorcida e pesada", tags:["distorcao","pesado","agressividade"], scores:{metal:4,rock:2} },
+        { text:"🎶 Melódica e emocional", tags:["melodia","emocional","letra"], scores:{rock:3,indie:3} },
+        { text:"🎵 Acústica e intimista", tags:["acoustico","intimista","letra"], scores:{mpb:3,indie:2,sertanejo:1} },
+        { text:"⚡ Técnica e veloz", tags:["tecnica","velocidade","complexo"], scores:{metal:4,rock:2} },
+      ]},
+      { id:5, text:"Que tipo de banda te representa?", type:"tag:guitarra", options:[
+        { text:"🤘 Uma banda de rock clássica", tags:["classico","banda","nostalgia"], scores:{rock:4,metal:1} },
+        { text:"🖤 Uma banda de metal extremo", tags:["pesado","agressividade","underground"], scores:{metal:4} },
+        { text:"🌿 Indie alternativa e autoral", tags:["alternativo","autoral","textura"], scores:{indie:4,rock:1} },
+        { text:"🌐 Qualquer uma, curto várias", tags:["versatil","explorador"], scores:{rock:2,indie:2,metal:1} },
+      ]},
+      { id:6, text:"Quando você dança, prefere:", type:"tag:danca", options:[
+        { text:"💃 Funk pesado e graves", tags:["graves","batida","popular"], scores:{funk:4,eletronica:1} },
+        { text:"🎉 Música eletrônica num festival", tags:["festival","euforia","drop"], scores:{eletronica:4,pop:1} },
+        { text:"🥂 Pop numa balada chic", tags:["balada","pop","melodia"], scores:{pop:4} },
+        { text:"🤠 Sertanejo universitário", tags:["sertanejo","popular","romantismo"], scores:{sertanejo:4} },
+      ]},
+      { id:7, text:"O que faz você não parar de dançar?", type:"tag:danca", options:[
+        { text:"🥁 Uma batida irresistível", tags:["batida","ritmo","energia"], scores:{funk:3,eletronica:3} },
+        { text:"🎤 Uma letra que todo mundo canta", tags:["popular","melodia","refrão"], scores:{pop:3,sertanejo:2} },
+        { text:"🔊 O grave que vibra no peito", tags:["graves","808","bass"], scores:{funk:3,trap:2,eletronica:2} },
+        { text:"🌀 O drop que explode tudo", tags:["drop","euforia","festival"], scores:{eletronica:4} },
+      ]},
+      { id:8, text:"Quando você quer refletir, escolhe:", type:"tag:introspectivo", options:[
+        { text:"🎷 Jazz instrumental e sofisticado", tags:["instrumental","sofisticado","improviso"], scores:{jazz:4} },
+        { text:"🌿 MPB com letras poéticas", tags:["letra","poetico","brasilidade"], scores:{mpb:4} },
+        { text:"🌧️ Indie melancólico e atmosférico", tags:["melancolia","atmosfera","alternativo"], scores:{indie:4} },
+        { text:"🔇 Silêncio ou sons ambientes", tags:["relaxamento","ambient","calm"], scores:{jazz:2,mpb:1} },
+      ]},
+      { id:9, text:"O que mais importa numa letra de música?", type:"tag:letra", options:[
+        { text:"📝 Poesia e metáforas", tags:["poetico","profundidade","letra"], scores:{mpb:4,jazz:1,indie:2} },
+        { text:"❤️ Contar uma história de amor", tags:["amor","romantismo","narrativa"], scores:{sertanejo:3,pop:2,mpb:1} },
+        { text:"⚔️ Força e atitude", tags:["atitude","empoderamento","swag"], scores:{trap:3,rock:2,metal:1} },
+        { text:"🎵 A letra nem importa tanto", tags:["batida","ritmo","instrumental"], scores:{eletronica:3,funk:2,jazz:2} },
+      ]},
+      { id:10, text:"Qual nível de energia você prefere na música?", type:"tag:energia", options:[
+        { text:"🔥 Máximo — explosão total", tags:["intensidade","adrenalina","pesado"], scores:{metal:4,eletronica:2,funk:2} },
+        { text:"⚡ Alto — mas com melodia", tags:["energia","melodia","animacao"], scores:{rock:3,pop:2,trap:2} },
+        { text:"🌊 Médio — equilíbrio perfeito", tags:["equilibrio","fluxo","versatil"], scores:{indie:3,sertanejo:2,pop:2} },
+        { text:"🍃 Baixo — relaxante e suave", tags:["calm","relaxamento","suave"], scores:{jazz:3,mpb:3} },
+      ]},
+      { id:11, text:"Em qual situação a música é indispensável?", type:"tag:energia", options:[
+        { text:"🏋️ Treinando na academia", tags:["adrenalina","motivacao","energia"], scores:{metal:3,rock:2,funk:2,eletronica:1} },
+        { text:"🥳 Numa festa com amigos", tags:["festa","danca","alegria"], scores:{funk:3,pop:2,eletronica:2} },
+        { text:"😴 Antes de dormir", tags:["calm","relaxamento","introspectivo"], scores:{jazz:3,mpb:2,indie:2} },
+        { text:"🚶 Andando pela rua", tags:["cotidiano","flow","ritmo"], scores:{trap:3,pop:2,indie:2} },
+      ]},
+      { id:12, text:"Sua relação com graves na música é:", type:"tag:graves", options:[
+        { text:"🔊 Quanto mais pesado melhor", tags:["graves","pesado","808"], scores:{funk:4,trap:3} },
+        { text:"⚖️ Gosto mas com equilíbrio", tags:["equilibrio","melodia","batida"], scores:{eletronica:3,pop:2} },
+        { text:"🎵 Prefiro clareza e agudos", tags:["melodia","vocal","clareza"], scores:{mpb:3,jazz:2,pop:1} },
+        { text:"🎸 Prefiro a guitarra ao baixo", tags:["guitarra","banda","rock"], scores:{rock:3,metal:2,indie:1} },
+      ]},
+      { id:13, text:"Música sem letra te...", type:"tag:instrumental", options:[
+        { text:"😌 Relaxa e te transporta", tags:["instrumental","ambient","relaxamento"], scores:{jazz:4,mpb:1} },
+        { text:"🎯 Foca totalmente", tags:["concentracao","flow","introspectivo"], scores:{jazz:3,eletronica:2,indie:1} },
+        { text:"🤷 É indiferente, tanto faz", tags:["versatil"], scores:{pop:1,rock:1} },
+        { text:"😕 Prefiro com letra, sem sombra de dúvida", tags:["vocal","letra","narrativa"], scores:{sertanejo:3,mpb:2,pop:2} },
+      ]},
+      { id:14, text:"Quando você ouve músicas antigas, sente:", type:"tag:nostalgia", options:[
+        { text:"💛 Saudade gostosa de momentos felizes", tags:["saudade","nostalgia","alegria"], scores:{sertanejo:3,pop:2,rock:1} },
+        { text:"😢 Uma melancolia que você abraça", tags:["melancolia","emocional","profundidade"], scores:{mpb:3,indie:3} },
+        { text:"🤩 Nostalgia de uma época que não viveu", tags:["nostalgia","retro","classico"], scores:{rock:3,jazz:2,mpb:1} },
+        { text:"😐 Não costumo ouvir antigas", tags:["moderno","atual","swag"], scores:{trap:3,funk:2,eletronica:1} },
+      ]},
+      { id:15, text:"Uma música romântica ideal para você é:", type:"tag:romantismo", options:[
+        { text:"🌹 Sertanejo emocionante e intenso", tags:["romantismo","saudade","sertanejo"], scores:{sertanejo:4} },
+        { text:"🎷 Jazz suave num jantar a dois", tags:["sofisticado","jazz","suave"], scores:{jazz:4} },
+        { text:"🎸 Rock com letra emotiva", tags:["emocional","rock","letra"], scores:{rock:3,indie:2} },
+        { text:"🎤 Pop melódico e direto ao coração", tags:["melodia","pop","amor"], scores:{pop:4} },
+      ]},
+      { id:16, text:"Você prefere artistas...", type:"misc", options:[
+        { text:"🌍 Internacionais clássicos", tags:["internacional","classico","nostalgia"], scores:{rock:2,jazz:2,metal:1,pop:1} },
+        { text:"🇧🇷 Nacionais e brasileiros", tags:["brasilidade","popular","nacional"], scores:{funk:2,mpb:2,sertanejo:2,trap:1} },
+        { text:"🔀 Mistura de tudo", tags:["versatil","explorador"], scores:{indie:2,pop:2} },
+        { text:"🕵️ Artistas underground e desconhecidos", tags:["underground","alternativo","autoral"], scores:{indie:3,metal:1,jazz:1} },
+      ]},
+      { id:17, text:"Em shows e festivais, você prefere:", type:"misc", options:[
+        { text:"🤘 Mosh pit e caos total", tags:["intensidade","agressividade","adrenalina"], scores:{metal:4,rock:2} },
+        { text:"🕺 Pista de dança lotada", tags:["danca","euforia","festival"], scores:{eletronica:4,funk:2} },
+        { text:"🎤 Cantar cada música com a plateia", tags:["popular","refrão","alegria"], scores:{pop:3,sertanejo:3} },
+        { text:"🎶 Apreciar sentado com atenção", tags:["sofisticado","introspectivo","instrumental"], scores:{jazz:3,mpb:2} },
+      ]},
+      { id:18, text:"Qual instrumento mais te representa?", type:"misc", options:[
+        { text:"🎸 Guitarra elétrica", tags:["guitarra","rebeldia","rock"], scores:{rock:3,metal:2,indie:1} },
+        { text:"🥁 Bateria e percussão", tags:["ritmo","batida","energia"], scores:{funk:2,rock:2,jazz:2} },
+        { text:"🎹 Teclado / sintetizador", tags:["sintetizador","melodia","atmosfera"], scores:{eletronica:3,jazz:2,pop:1} },
+        { text:"🎤 Minha própria voz", tags:["vocal","letra","expressao"], scores:{pop:2,mpb:2,sertanejo:2} },
+      ]},
+      { id:19, text:"Música pra você é principalmente:", type:"misc", options:[
+        { text:"💪 Motivação e energia", tags:["motivacao","energia","adrenalina"], scores:{metal:3,rock:2,trap:2} },
+        { text:"💆 Terapia e alívio", tags:["terapia","emocional","relaxamento"], scores:{mpb:3,indie:2,jazz:1} },
+        { text:"🎊 Diversão e alegria", tags:["festa","alegria","danca"], scores:{funk:3,pop:2,eletronica:2} },
+        { text:"🎨 Arte e expressão", tags:["arte","autoral","alternativo"], scores:{indie:3,jazz:2,mpb:2} },
+      ]},
+      { id:20, text:"Que tipo de videoclipe você mais curte?", type:"misc", options:[
+        { text:"🔥 Cheio de ação e intensidade", tags:["intensidade","energia","adrenalina"], scores:{rock:3,metal:2,trap:2} },
+        { text:"💃 Com dança e coreografia", tags:["danca","coreografia","pop"], scores:{pop:3,funk:3} },
+        { text:"🌅 Cinematográfico e poético", tags:["cinematografico","poetico","arte"], scores:{indie:3,mpb:2} },
+        { text:"😂 Engraçado e irreverente", tags:["irreverente","informal","popular"], scores:{funk:2,pop:2,sertanejo:1} },
+      ]},
+      { id:21, text:"Você curte música eletrônica?", type:"misc", options:[
+        { text:"🚀 Sim, adoro qualquer tipo", tags:["eletronica","sintetizador","drop"], scores:{eletronica:4} },
+        { text:"🎵 Só no contexto certo", tags:["versatil","festival","festa"], scores:{eletronica:2,pop:1} },
+        { text:"🤔 Depende da vibe", tags:["versatil"], scores:{eletronica:1,indie:1} },
+        { text:"❌ Não é meu estilo", tags:["organico","acustico"], scores:{mpb:1,rock:1,jazz:1} },
+      ]},
+      { id:22, text:"Qual sensação você mais busca?", type:"misc", options:[
+        { text:"🌊 Flutuar e relaxar", tags:["relaxamento","ambient","suave"], scores:{jazz:3,mpb:2,indie:2} },
+        { text:"⚡ Arrepiar a espinha", tags:["intensidade","emocional","catarse"], scores:{metal:3,rock:2,mpb:1} },
+        { text:"💃 Mover o corpo sem pensar", tags:["danca","ritmo","festa"], scores:{funk:3,eletronica:3} },
+        { text:"🌌 Ser transportado pra outro lugar", tags:["atmosfera","imersao","sonho"], scores:{indie:3,jazz:2,eletronica:1} },
+      ]},
+      { id:23, text:"Suas playlists são geralmente:", type:"misc", options:[
+        { text:"🎯 Focadas num único estilo", tags:["puro","especifico","intense"], scores:{metal:2,jazz:2,funk:2} },
+        { text:"🌈 Mistura de vários gêneros", tags:["versatil","explorador","amplo"], scores:{pop:2,indie:2} },
+        { text:"📅 Diferentes para cada momento", tags:["contextual","adaptavel"], scores:{mpb:2,sertanejo:2,eletronica:1} },
+        { text:"🔀 No shuffle, que escolham por mim", tags:["casual","popular","aleatorio"], scores:{pop:3,trap:1} },
+      ]},
+      { id:24, text:"Você prefere música com:", type:"misc", options:[
+        { text:"🎸 Muitos instrumentos ao vivo", tags:["banda","organico","ao-vivo"], scores:{rock:3,jazz:3,mpb:2} },
+        { text:"💻 Produção eletrônica elaborada", tags:["producao","sintetizador","estudio"], scores:{eletronica:3,trap:2,pop:2} },
+        { text:"🎤 Voz que domina tudo", tags:["vocal","expressao","melodia"], scores:{pop:2,mpb:3,sertanejo:2} },
+        { text:"🥁 Batida que manda", tags:["batida","ritmo","groove"], scores:{funk:3,trap:2,rock:1} },
+      ]},
+      { id:25, text:"Você se considera uma pessoa:", type:"personality", options:[
+        { text:"😤 Intensa e apaixonada", tags:["intensidade","emocional","adrenalina"], scores:{metal:2,rock:2,sertanejo:2} },
+        { text:"😄 Animada e extrovertida", tags:["extrovertido","festa","alegria"], scores:{funk:3,pop:2,eletronica:2} },
+        { text:"🤫 Introspectiva e pensativa", tags:["introspectivo","reflexao","profundidade"], scores:{jazz:3,mpb:2,indie:3} },
+        { text:"😎 Descolada e antenada", tags:["moderno","swag","cool"], scores:{trap:3,indie:2,pop:1} },
+      ]},
+      { id:26, text:"Em que momento você mais ouve música?", type:"personality", options:[
+        { text:"🌙 À noite, na cama", tags:["introspectivo","calm","noturno"], scores:{indie:3,trap:2,jazz:2} },
+        { text:"☀️ De manhã pra animar", tags:["motivacao","energia","alegria"], scores:{pop:3,funk:2,rock:2} },
+        { text:"🏃 Praticando esportes", tags:["adrenalina","motivacao","ritmo"], scores:{metal:3,eletronica:2,funk:2} },
+        { text:"🍽️ Em refeições e momentos cotidianos", tags:["cotidiano","relaxamento","suave"], scores:{mpb:3,jazz:2,sertanejo:2} },
+      ]},
+      { id:27, text:"Que tipo de artista você prefere?", type:"personality", options:[
+        { text:"🎭 Teatral e performático", tags:["performance","arte","expressao"], scores:{pop:3,metal:2} },
+        { text:"🎸 Autêntico e cru", tags:["autoral","autenticidade","rebeldia"], scores:{rock:3,indie:3} },
+        { text:"🧠 Técnico e virtuoso", tags:["tecnica","complexo","sofisticado"], scores:{jazz:3,metal:2} },
+        { text:"💃 Carismático e dançante", tags:["carisma","danca","popular"], scores:{funk:3,pop:2} },
+      ]},
+      { id:28, text:"Tristeza na música é:", type:"emotional", options:[
+        { text:"💜 Catártica e necessária", tags:["catarse","emocional","melancolia"], scores:{mpb:3,indie:3,rock:1} },
+        { text:"🌧️ Bonita e poética", tags:["poetico","beleza","saudade"], scores:{mpb:4,jazz:2} },
+        { text:"😕 Prefiro evitar", tags:["alegria","festa","positivo"], scores:{funk:2,pop:2,eletronica:1} },
+        { text:"⚡ Prefiro transformar em raiva", tags:["raiva","intensidade","catarse"], scores:{metal:4,rock:2} },
+      ]},
+      { id:29, text:"Você prefere músicas com:", type:"emotional", options:[
+        { text:"🌟 Final feliz e esperançoso", tags:["esperanca","alegria","positivo"], scores:{pop:3,sertanejo:2} },
+        { text:"🌑 Atmosfera densa e profunda", tags:["profundidade","atmosfera","denso"], scores:{metal:3,indie:2,jazz:1} },
+        { text:"🌊 Dualidade — alegria e tristeza", tags:["dualidade","complexo","emocional"], scores:{mpb:3,indie:3} },
+        { text:"😐 Sem julgamento, depende do momento", tags:["versatil","adaptavel"], scores:{rock:1,pop:1,mpb:1} },
+      ]},
+      { id:30, text:"Amor em música é melhor representado por:", type:"emotional", options:[
+        { text:"🥹 Letras que fazem chorar", tags:["emocional","amor","saudade"], scores:{sertanejo:4,mpb:2} },
+        { text:"🔥 Uma vibe sensual e intensa", tags:["sensual","intensidade","amor"], scores:{funk:3,trap:2,pop:2} },
+        { text:"🌹 Algo suave e inesquecível", tags:["suave","romantismo","melodia"], scores:{pop:3,jazz:3} },
+        { text:"💥 Uma música que você nunca esquece", tags:["impacto","memoravel","emocional"], scores:{rock:2,mpb:2,indie:2} },
+      ]},
+      { id:31, text:"Quando pensa em rock, pensa em:", type:"tag:guitarra", options:[
+        { text:"🎸 Clássico — anos 70/80/90", tags:["classico","nostalgia","retro"], scores:{rock:4,metal:1} },
+        { text:"💀 Metal extremo e pesado", tags:["pesado","agressividade","tecnica"], scores:{metal:4} },
+        { text:"🌿 Indie e alternativo moderno", tags:["alternativo","moderno","indie"], scores:{indie:4} },
+        { text:"🤘 Punk e rebeldia", tags:["rebeldia","energia","atitude"], scores:{rock:3,indie:1} },
+      ]},
+      { id:32, text:"Na eletrônica, o que mais te atrai?", type:"tag:sintetizador", options:[
+        { text:"🎆 O drop que explode tudo", tags:["drop","euforia","energia"], scores:{eletronica:4} },
+        { text:"🌌 Texturas e paisagens sonoras", tags:["textura","atmosfera","ambient"], scores:{eletronica:2,indie:2,jazz:1} },
+        { text:"🕺 A batida que não para", tags:["batida","ritmo","danca"], scores:{eletronica:3,funk:2} },
+        { text:"💥 A distorção e o caos sonoro", tags:["distorcao","intensidade","experimental"], scores:{eletronica:2,metal:2} },
+      ]},
+      { id:33, text:"O que faz você ouvir uma música repetidamente?", type:"misc", options:[
+        { text:"🪝 Um refrão impossível de tirar da cabeça", tags:["refrão","melodia","pop"], scores:{pop:4,sertanejo:2} },
+        { text:"⚡ Uma intensidade que te vicia", tags:["intensidade","adrenalina","vicio"], scores:{metal:3,rock:2} },
+        { text:"🎭 Uma letra que fala exatamente o que sente", tags:["letra","emocional","identificacao"], scores:{mpb:3,indie:2,sertanejo:2} },
+        { text:"🥁 Um ritmo irresistível", tags:["ritmo","batida","groove"], scores:{funk:3,trap:2,eletronica:1} },
+      ]},
+      { id:34, text:"Você prefere música com temática:", type:"misc", options:[
+        { text:"✊ Social e política", tags:["politico","profundidade","autoral"], scores:{mpb:4,rock:2} },
+        { text:"❤️ Amor e relacionamentos", tags:["amor","romantismo","emocional"], scores:{sertanejo:3,pop:3} },
+        { text:"🌙 Existencialismo e filosofia", tags:["filosofia","reflexao","complexo"], scores:{jazz:3,indie:2,mpb:2} },
+        { text:"💰 Vida, atitude e ostentação", tags:["atitude","swag","ostentacao"], scores:{trap:4,funk:2} },
+      ]},
+      { id:35, text:"Qual é seu snack musical para 3 horas de viagem?", type:"misc", options:[
+        { text:"🤘 Só as melhores do rock e metal", tags:["rock","metal","guitarra"], scores:{rock:3,metal:2} },
+        { text:"🎶 Playlist aleatória e variada", tags:["versatil","explorador","pop"], scores:{pop:2,indie:2} },
+        { text:"🇧🇷 MPB e sertanejo pra cantar na estrada", tags:["nacional","popular","saudade"], scores:{mpb:3,sertanejo:3} },
+        { text:"🎧 Trap e funk no volume máximo", tags:["trap","funk","energia"], scores:{trap:3,funk:3} },
+      ]},
+      { id:36, text:"Como você descreveria sua vibe musical?", type:"personality", options:[
+        { text:"🌊 Fluida e sem fronteiras", tags:["versatil","explorador","amplo"], scores:{indie:2,jazz:2,pop:1} },
+        { text:"⚡ Intensa e poderosa", tags:["intensidade","adrenalina","poder"], scores:{metal:3,rock:2,trap:2} },
+        { text:"💛 Alegre e contagiante", tags:["alegria","festa","popular"], scores:{funk:3,pop:3} },
+        { text:"🌑 Profunda e enigmática", tags:["profundidade","alternativo","autoral"], scores:{mpb:3,indie:2,jazz:2} },
+      ]},
+      { id:37, text:"Qual é a principal função da música na sua vida?", type:"personality", options:[
+        { text:"🚀 Me motivar e energizar", tags:["motivacao","energia","adrenalina"], scores:{metal:2,rock:2,funk:2,eletronica:1} },
+        { text:"🛋️ Me relaxar e descansar", tags:["relaxamento","calm","suave"], scores:{jazz:3,mpb:2} },
+        { text:"💬 Me expressar e me identificar", tags:["identidade","expressao","autoral"], scores:{rock:2,indie:2,trap:2} },
+        { text:"🎊 Me divertir com outras pessoas", tags:["social","festa","danca"], scores:{funk:3,sertanejo:2,eletronica:2} },
+      ]},
+      { id:38, text:"Musica nova ou música velha?", type:"misc", options:[
+        { text:"📼 Adoro os clássicos atemporais", tags:["classico","nostalgia","retro"], scores:{rock:3,jazz:3,mpb:2} },
+        { text:"🔥 Sempre as mais novas e atuais", tags:["moderno","atual","contemporaneo"], scores:{trap:3,pop:2,funk:2} },
+        { text:"🌈 Depende — curto de tudo", tags:["versatil","explorador"], scores:{indie:2,pop:1} },
+        { text:"🕵️ Gosto de descobrir artistas novos e desconhecidos", tags:["underground","alternativo","explorador"], scores:{indie:4,jazz:1} },
+      ]},
+      { id:39, text:"Qual efeito sonoro mais te atrai?", type:"misc", options:[
+        { text:"🔊 Distorção de guitarra", tags:["distorcao","guitarra","rock"], scores:{rock:3,metal:3} },
+        { text:"💥 808 e sub-bass que treme tudo", tags:["808","graves","bass"], scores:{trap:4,funk:2} },
+        { text:"🎷 Sopro de jazz ao vivo", tags:["sopro","jazz","ao-vivo"], scores:{jazz:4} },
+        { text:"✨ Synth e pad eletrônico", tags:["sintetizador","eletronica","atmosfera"], scores:{eletronica:4,indie:1} },
+      ]},
+      { id:40, text:"Que tipo de capa de álbum te chama atenção?", type:"misc", options:[
+        { text:"🖤 Dark, obscura e misteriosa", tags:["obscuro","misterioso","underground"], scores:{metal:3,rock:2,indie:2} },
+        { text:"🌈 Colorida, alegre e vibrante", tags:["alegria","colorido","pop"], scores:{pop:3,funk:1} },
+        { text:"📸 Fotográfica e cinematográfica", tags:["arte","cinematografico","autoral"], scores:{indie:3,mpb:2} },
+        { text:"💎 Minimalista e sofisticada", tags:["sofisticado","minimalista","elegante"], scores:{jazz:3,eletronica:1} },
+      ]},
+      { id:41, text:"Você canta no chuveiro?", type:"fun", options:[
+        { text:"🎤 Sim, concerto completo!", tags:["extrovertido","melodia","vocal"], scores:{pop:3,sertanejo:2} },
+        { text:"🎸 Sim, com solo de guitarra no ar", tags:["guitarra","rebeldia","rock"], scores:{rock:3,metal:1} },
+        { text:"😅 Às vezes, baixinho", tags:["introspectivo","timido"], scores:{indie:2,mpb:1} },
+        { text:"🚿 Não, prefiro só ouvir", tags:["introspectivo","focado"], scores:{jazz:2,mpb:1} },
+      ]},
+      { id:42, text:"Qual dessas películas você assistiria com uma trilha sonora sua?", type:"fun", options:[
+        { text:"🎬 Ação e explosão — sem parar", tags:["adrenalina","energia","intensidade"], scores:{metal:3,rock:2,eletronica:1} },
+        { text:"💕 Romance sensível e emocionante", tags:["romance","emocional","melodia"], scores:{pop:3,sertanejo:2,mpb:1} },
+        { text:"🌌 Sci-fi atmosférico e futurista", tags:["atmosfera","futurista","experimental"], scores:{eletronica:3,indie:2} },
+        { text:"😂 Comédia divertida e leve", tags:["alegria","leveza","popular"], scores:{funk:3,pop:2} },
+      ]},
+      { id:43, text:"Você usa música para:", type:"misc", options:[
+        { text:"📚 Estudar ou trabalhar focado", tags:["concentracao","instrumental","calm"], scores:{jazz:3,eletronica:2,indie:1} },
+        { text:"🧘 Meditar ou praticar yoga", tags:["relaxamento","ambient","paz"], scores:{jazz:3,mpb:2} },
+        { text:"💃 Animar uma reunião", tags:["festa","energia","popular"], scores:{funk:3,pop:2,sertanejo:2} },
+        { text:"😢 Processar sentimentos difíceis", tags:["catarse","emocional","letra"], scores:{mpb:3,indie:2,rock:1} },
+      ]},
+      { id:44, text:"Qual dessas sub-cenas mais te agrada?", type:"misc", options:[
+        { text:"🌿 Lo-fi e chillhop", tags:["calm","instrumental","ambient"], scores:{jazz:2,indie:3} },
+        { text:"🌀 Phonk e dark trap", tags:["obscuro","graves","batida"], scores:{trap:4} },
+        { text:"🌸 Bossa Nova e MPB clássica", tags:["brasilidade","sofisticado","poetico"], scores:{mpb:4,jazz:2} },
+        { text:"🔊 EDM e big room", tags:["festival","drop","euforia"], scores:{eletronica:4} },
+      ]},
+      { id:45, text:"O que faz um álbum ser memorável pra você?", type:"misc", options:[
+        { text:"🎯 Coesão e identidade própria", tags:["autoral","identidade","profundidade"], scores:{mpb:3,indie:3,jazz:2} },
+        { text:"🔥 Hits que viram febre", tags:["popular","hit","refrão"], scores:{pop:3,sertanejo:2} },
+        { text:"🤯 Experimentação e inovação", tags:["experimental","inovacao","complexo"], scores:{eletronica:2,indie:2,jazz:2} },
+        { text:"⚡ Energia e intensidade do início ao fim", tags:["intensidade","energia","adrenalina"], scores:{metal:3,rock:2} },
+      ]},
+      { id:46, text:"O que você acha de letras em outro idioma?", type:"misc", options:[
+        { text:"🌍 Adoro! A língua é parte do som", tags:["internacional","som","textura"], scores:{rock:2,metal:2,eletronica:1,jazz:1} },
+        { text:"🇧🇷 Prefiro entender o que dizem", tags:["nacional","letra","popular"], scores:{mpb:3,sertanejo:3,funk:1} },
+        { text:"🔀 Tanto faz, depende da música", tags:["versatil"], scores:{pop:2,indie:2} },
+        { text:"🎵 Às vezes ajuda a criar uma atmosfera especial", tags:["atmosfera","textura","experimental"], scores:{indie:2,eletronica:2} },
+      ]},
+      { id:47, text:"Que produtor ou DJ você mais curte?", type:"misc", options:[
+        { text:"🎹 Um que cria paisagens sonoras épicas", tags:["ambient","epico","atmosfera"], scores:{eletronica:3,indie:2} },
+        { text:"🥁 Um que bota todo mundo pra dançar", tags:["danca","festa","ritmo"], scores:{funk:3,eletronica:2,pop:1} },
+        { text:"🎸 Um que respeita os instrumentos ao vivo", tags:["organico","ao-vivo","tecnica"], scores:{rock:2,jazz:3,mpb:2} },
+        { text:"💎 Um com identidade única e inovadora", tags:["inovacao","identidade","underground"], scores:{trap:3,indie:2} },
+      ]},
+      { id:48, text:"Qual dessas épocas musicais você mais admira?", type:"misc", options:[
+        { text:"🎸 Anos 70-80 — clássicos do rock e soul", tags:["classico","nostalgia","guitarra"], scores:{rock:3,jazz:2,mpb:1} },
+        { text:"💿 Anos 90 — grunge, hip-hop e pop", tags:["nostalgia","diversidade","alternativo"], scores:{rock:2,indie:2,trap:1} },
+        { text:"📱 Hoje — tudo acontece ao mesmo tempo", tags:["contemporaneo","moderno","atual"], scores:{trap:2,pop:2,eletronica:2} },
+        { text:"🌴 Décadas de ouro do Brasil — Tropicália, MPB", tags:["brasilidade","poetico","classico"], scores:{mpb:4,jazz:1} },
+      ]},
+      { id:49, text:"Você repetiria uma música na mesma sessão?", type:"fun", options:[
+        { text:"🔁 Sim, várias vezes seguidas!", tags:["intensidade","vicio","emocional"], scores:{metal:2,rock:2,mpb:2} },
+        { text:"🎵 Às vezes, se tiver uma parte incrível", tags:["melodia","impacto","detalhe"], scores:{pop:2,indie:2,jazz:2} },
+        { text:"➡️ Não, prefiro sempre a próxima", tags:["explorador","novidade","variedade"], scores:{trap:2,funk:2,eletronica:1} },
+        { text:"🧠 Só se precisar memorizar a letra", tags:["letra","popular","vocal"], scores:{sertanejo:2,pop:2} },
+      ]},
+      { id:50, text:"No final, música boa é aquela que:", type:"final", options:[
+        { text:"❤️ Te faz sentir algo profundo", tags:["emocional","profundidade","catarse"], scores:{mpb:3,indie:2,rock:2} },
+        { text:"💃 Te coloca em movimento", tags:["danca","ritmo","energia"], scores:{funk:3,eletronica:2,pop:2} },
+        { text:"🧠 Te faz pensar e questionar", tags:["reflexao","profundidade","autoral"], scores:{jazz:3,mpb:2,indie:2} },
+        { text:"🔥 Te dá aquela adrenalina incrível", tags:["adrenalina","intensidade","poder"], scores:{metal:3,rock:2,trap:2} },
+      ]},
     ];
 
-        let currentQuestion = 0;
+    function selectQuestions(allQuestions, currentTags) {
+      const selected = [];
+      const usedIds = new Set();
+      const initials = allQuestions.filter(q => q.type === "initial");
+      initials.slice(0, 3).forEach(q => { selected.push(q); usedIds.add(q.id); });
+      const sortedTags = Object.entries(currentTags).sort((a, b) => b[1] - a[1]);
+      const topTags = sortedTags.slice(0, 3).map(([tag]) => tag);
+      topTags.forEach(tag => {
+        const tagQ = allQuestions.filter(q => q.type === `tag:${tag}` && !usedIds.has(q.id));
+        if (tagQ.length > 0) {
+          const pick = tagQ[Math.floor(Math.random() * tagQ.length)];
+          selected.push(pick); usedIds.add(pick.id);
+        }
+      });
+      const remaining = allQuestions.filter(q =>
+        !usedIds.has(q.id) && ["misc","personality","emotional","fun","final"].includes(q.type)
+      ).sort(() => Math.random() - 0.5);
+      while (selected.length < 15 && remaining.length > 0) {
+        const next = remaining.pop();
+        selected.push(next); usedIds.add(next.id);
+      }
+      return selected.slice(0, 15);
+    }
 
+    function calculateResults(answers) {
+      const genreScores = {};
+      const tagCounts = {};
+      Object.keys(GENRES).forEach(g => { genreScores[g] = 0; });
+      answers.forEach(answer => {
+        Object.entries(answer.scores).forEach(([genre, pts]) => {
+          genreScores[genre] = (genreScores[genre] || 0) + pts;
+        });
+        answer.tags.forEach(tag => { tagCounts[tag] = (tagCounts[tag] || 0) + 1; });
+      });
+      const total = Object.values(genreScores).reduce((a, b) => a + b, 0) || 1;
+      const percentages = {};
+      Object.entries(genreScores).forEach(([g, score]) => {
+        percentages[g] = Math.round((score / total) * 100);
+      });
+      const topGenres = Object.entries(percentages)
+        .filter(([, pct]) => pct > 5)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+      const profileScores = {};
+      Object.entries(PROFILES).forEach(([pid, profile]) => {
         let score = 0;
+        profile.tags.forEach(tag => { score += (tagCounts[tag] || 0); });
+        profileScores[pid] = score;
+      });
+      const topProfiles = Object.entries(profileScores)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(([pid]) => pid);
+      const desc = generateDescription(topGenres, topProfiles, tagCounts);
+      const recommendations = topGenres.slice(0, 3).map(([genre]) => ({ genre, data: GENRES[genre] }));
+      return { percentages, topGenres, topProfiles, tagCounts, recommendations, description: desc };
+    }
 
-        const questionElement = document.getElementById("question");
+    function generateDescription(topGenres, topProfiles, tagCounts) {
+      const top1 = topGenres[0]?.[0];
+      const top2 = topGenres[1]?.[0];
+      const p1 = PROFILES[topProfiles[0]];
+      const g1 = GENRES[top1];
+      const g2 = top2 ? GENRES[top2] : null;
+      let desc = `Você possui um perfil musical ${p1?.label?.toLowerCase() || "único"} e autêntico. `;
+      if (g1) desc += `Sua essência está no ${g1.label}`;
+      if (g2) desc += `, com fortes influências de ${g2.label}`;
+      desc += ". ";
+      if (tagCounts["emocional"] > 1 || tagCounts["letra"] > 1) desc += "As letras falam direto ao seu coração. ";
+      if (tagCounts["danca"] > 1 || tagCounts["festa"] > 1) desc += "Você vive para a pista de dança. ";
+      if (tagCounts["intensidade"] > 1 || tagCounts["adrenalina"] > 1) desc += "Música para você é adrenalina pura. ";
+      if (tagCounts["introspectivo"] > 1 || tagCounts["reflexao"] > 1) desc += "Você usa a música como ferramenta de autoconhecimento. ";
+      return desc.trim();
+    }
 
-        questionElement.innerText = questions[currentQuestion];
+    function MusicQuiz() {
+      const [phase, setPhase] = useState("splash");
+      const [questions, setQuestions] = useState([]);
+      const [currentIdx, setCurrentIdx] = useState(0);
+      const [answers, setAnswers] = useState([]);
+      const [selected, setSelected] = useState(null);
+      const [currentTags, setCurrentTags] = useState({});
+      const [results, setResults] = useState(null);
+      const [adaptLabel, setAdaptLabel] = useState(null);
+      const [animKey, setAnimKey] = useState(0);
 
-        function answer(response) {
+      const startQuiz = () => {
+        const qs = selectQuestions(ALL_QUESTIONS, {});
+        setQuestions(qs); setCurrentIdx(0); setAnswers([]); setSelected(null);
+        setCurrentTags({}); setResults(null); setAdaptLabel(null); setPhase("quiz");
+      };
 
-            if(response === "sim") {
-                score++;
-            }
-
-            currentQuestion++;
-
-            if(currentQuestion < questions.length) {
-
-                questionElement.innerText = questions[currentQuestion];
-
-            } else {
-
-                showResult();
-
-            }
+      const handleNext = () => {
+        if (!selected) return;
+        const newAnswers = [...answers, selected];
+        const newTags = { ...currentTags };
+        selected.tags.forEach(t => { newTags[t] = (newTags[t] || 0) + 1; });
+        setCurrentTags(newTags);
+        if (currentIdx + 1 >= questions.length) {
+          setAnswers(newAnswers); setPhase("loading");
+          setTimeout(() => { setResults(calculateResults(newAnswers)); setPhase("result"); }, 1800);
+        } else {
+          const nextQ = questions[currentIdx + 1];
+          setAnswers(newAnswers);
+          setAdaptLabel(nextQ.type.startsWith("tag:") ? nextQ.type.replace("tag:", "") : null);
+          setCurrentIdx(prev => prev + 1); setSelected(null); setAnimKey(k => k + 1);
         }
+      };
 
-        function showResult() {
+      const progress = questions.length > 0 ? (currentIdx / questions.length) * 100 : 0;
 
-            const result = document.getElementById("result");
+      return (
+        <div className="app">
+          <div className="card">
+            {phase === "splash" && (
+              <div className="splash">
+                <span className="splash-icon">🎵</span>
+                <h1>Qual é o seu DNA Musical?</h1>
+                <p>Responda 15 perguntas e descubra seu perfil musical, com recomendações personalizadas de artistas e músicas.</p>
+                <div className="splash-stats">
+                  <div className="stat"><span className="stat-n">15</span><span className="stat-l">Perguntas</span></div>
+                  <div className="stat"><span className="stat-n">10</span><span className="stat-l">Gêneros</span></div>
+                  <div className="stat"><span className="stat-n">50+</span><span className="stat-l">Músicas</span></div>
+                </div>
+                <button className="btn" onClick={startQuiz}>🚀 Descobrir meu perfil</button>
+              </div>
+            )}
 
-            if(score >= 13) {
+            {phase === "quiz" && questions.length > 0 && (
+              <>
+                <div className="progress-bar"><div className="progress-fill" style={{width:`${progress}%`}} /></div>
+                {adaptLabel && (
+                  <div className="adapt-hint">
+                    <div className="adapt-dot" />
+                    <span className="adapt-text">🧠 IA adaptando: pergunta baseada nas suas respostas → {adaptLabel}</span>
+                  </div>
+                )}
+                <div className="question-wrap" key={animKey}>
+                  <div className="q-meta">
+                    <span className="q-num">Pergunta {currentIdx + 1}</span>
+                    <span className="q-counter">{currentIdx + 1} / {questions.length}</span>
+                  </div>
+                  <div className="q-text">{questions[currentIdx].text}</div>
+                  <div className="options">
+                    {questions[currentIdx].options.map((opt, i) => (
+                      <button key={i} className={`option${selected === opt ? " selected" : ""}`} onClick={() => setSelected(opt)}>
+                        <span className="option-emoji">{opt.text.slice(0, 2)}</span>
+                        <span>{opt.text.slice(2).trim()}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <div style={{marginTop:24,display:"flex",justifyContent:"flex-end"}}>
+                    <button className="btn" onClick={handleNext} disabled={!selected}>
+                      {currentIdx + 1 === questions.length ? "Ver Resultado ✨" : "Próxima →"}
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
 
-                result.innerText = "🎧 Seu estilo combina com POP, sendo um estilo mais abrangente para várias categorias agitadas, modernas e com bastante energia!";
+            {phase === "loading" && (
+              <div style={{padding:"80px 40px",textAlign:"center"}}>
+                <div style={{fontSize:48,marginBottom:20,animation:"pulse 1s ease infinite"}}>🎧</div>
+                <div style={{fontFamily:"'Clash Display',sans-serif",fontSize:20,fontWeight:600,marginBottom:8}}>Analisando seu perfil...</div>
+                <div style={{color:"var(--muted)",fontSize:14}}>Calculando compatibilidade musical</div>
+                <div style={{marginTop:32,display:"flex",justifyContent:"center",gap:8}}>
+                  {[0,1,2].map(i => (
+                    <div key={i} style={{width:8,height:8,borderRadius:"50%",background:"var(--accent)",animation:`pulse 1s ease ${i*0.2}s infinite`}} />
+                  ))}
+                </div>
+              </div>
+            )}
 
-            } else if(score >= 11) {
+            {phase === "result" && results && (
+              <div className="result-wrap">
+                <div className="result-header">
+                  <span className="result-icon">🎵</span>
+                  <div className="result-title">Seu Perfil Musical</div>
+                  <p className="result-desc">{results.description}</p>
+                </div>
+                <div style={{marginBottom:28}}>
+                  <div className="section-title">Compatibilidade Musical</div>
+                  <div className="genres-list">
+                    {results.topGenres.map(([genre, pct]) => (
+                      <div key={genre} className="genre-row">
+                        <span className="genre-label">{GENRES[genre]?.label}</span>
+                        <div className="genre-bar-wrap">
+                          <div className="genre-bar" style={{width:`${pct}%`,background:`linear-gradient(90deg,${GENRES[genre]?.color}99,${GENRES[genre]?.color})`}} />
+                        </div>
+                        <span className="genre-pct">{pct}%</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div style={{marginBottom:28}}>
+                  <div className="section-title">Seus Perfis</div>
+                  <div className="profiles">
+                    {results.topProfiles.map((pid, i) => (
+                      <div key={pid} className={`profile-chip${i === 0 ? " top" : ""}`}>
+                        <span>{PROFILES[pid]?.icon}</span><span>{PROFILES[pid]?.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <p style={{fontSize:13,color:"var(--muted)",lineHeight:1.5}}>{PROFILES[results.topProfiles[0]]?.desc}</p>
+                </div>
+                <div style={{marginBottom:32}}>
+                  <div className="section-title">Artistas & Músicas Recomendadas</div>
+                  <div className="recs">
+                    {results.recommendations.map(({genre,data}) => (
+                      <div key={genre} className="rec-card" style={{borderColor:`${data.color}30`}}>
+                        <div className="rec-header" style={{background:`${data.color}10`}}>
+                          <div className="rec-dot" style={{background:data.color}} />
+                          <span className="rec-genre">{data.label}</span>
+                          <span className="rec-pct">{results.percentages[genre]}%</span>
+                        </div>
+                        <div className="rec-body">
+                          <div className="rec-col">
+                            <h5>Artistas</h5>
+                            <ul>{data.artists.slice(0,4).map(a => <li key={a}>{a}</li>)}</ul>
+                          </div>
+                          <div className="rec-col">
+                            <h5>Músicas</h5>
+                            <ul>{data.songs.slice(0,4).map(s => <li key={s}>{s}</li>)}</ul>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="result-actions">
+                  <button className="btn" onClick={startQuiz}>🔄 Refazer Quiz</button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
 
-                result.innerText = "🎸 Seu estilo combina com músicas antigas, talvez algo como Blues, Jazz, Rock clássico, Soul ou Disco.";
-
-            } else if(score >= 9) {
-
-                result.innerText = "🎵 Seu estilo combina com Rock Alternativo e Indie, algo mais emocional, criativo e com personalidade.";
-
-            } else if(score >= 7) {
-
-                result.innerText = "🎹 Seu estilo combina com Lo-fi, Jazz calmo e músicas instrumentais para relaxar, estudar ou ficar mais tranquilo.";
-
-            } else if(score >= 5) {
-
-                result.innerText = "🎤 Seu estilo combina com Hip Hop, Rap e R&B, focando mais em letras, ritmo e expressão pessoal.";
-
-            } else if(score >= 3) {
-
-                result.innerText = "🌌 Seu estilo combina com músicas ambientes e eletrônicas mais leves, criando uma sensação de imersão e tranquilidade.";
-
-            } else {
-
-                result.innerText = "🎻 Seu estilo combina com música clássica e sons mais suaves, trazendo uma experiência mais calma e emocional.";
-            }
-
-            document.querySelector(".buttons").style.display = "none";
-        }
-
-        function resetQuiz() {
-
-            const container = document.querySelector(".question-container");
-
-            container.classList.add("fade");
-
-            setTimeout(() => {
-
-                currentQuestion = 0;
-                score = 0;
-
-                questionElement.innerText = questions[currentQuestion];
-
-                document.querySelector(".buttons").style.display = "block";
-
-                document.getElementById("result").innerText = "";
-
-                container.classList.remove("fade");
-
-            }, 500);
-        }
-    </script>
-
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<MusicQuiz />);
+  </script>
 </body>
 </html>
